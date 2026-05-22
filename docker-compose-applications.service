@@ -1,0 +1,16 @@
+[Unit]
+Description=Docker Compose Up in ~/Applications
+After=network-online.target docker.service
+Wants=docker.service
+
+[Service]
+Type=simple
+WorkingDirectory=%h/Applications
+ExecStart=/usr/bin/docker compose up
+TimeoutStartSec=30min
+Restart=always
+RestartSec=10s
+
+[Install]
+WantedBy=default.target
+

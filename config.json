@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "searxng": {
+      "command": "bunx",
+      "args": ["-y", "mcp-searxng"],
+      "env": {
+        "SEARXNG_URL": "http://localhost:1080"
+      }
+    }
+  }
+}

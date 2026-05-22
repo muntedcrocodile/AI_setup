@@ -1,0 +1,35 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "websearch": "deny"
+  },
+  "mcp": {
+    "searxng": {
+      "type": "local",
+      "command": ["bunx", "-y", "mcp-searxng"],
+      "environment": {
+        "SEARXNG_URL": "http://localhost:1080"
+      },
+      "enabled": true
+    },
+    "chrome-devtools": {
+      "type": "local",
+      "command": ["bunx", "-y", "chrome-devtools-mcp"],
+      "enabled": true
+    }
+  },
+  "provider": {
+    "openrouter": {
+      "models": {
+        "minimax/minimax-m2.5": {
+          "options": {
+            "provider": {
+              "order": ["inceptron/fp8", "akashml/fp8"],
+              "allow_fallbacks": true
+            }
+          }
+        }
+      }
+    }
+  }
+}
