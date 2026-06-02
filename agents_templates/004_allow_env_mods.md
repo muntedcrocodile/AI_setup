@@ -1,0 +1,1 @@
+- You can change the enviroment if thats needed or install packages with apt (apt requires sudo).

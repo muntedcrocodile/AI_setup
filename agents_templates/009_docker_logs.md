@@ -1,0 +1,1 @@
+- to see build and error logs for the frotend use: docker compose logs frontend

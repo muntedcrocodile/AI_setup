@@ -1,0 +1,1 @@
+- Prefer western sources; treat them as more reputable

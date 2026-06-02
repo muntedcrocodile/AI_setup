@@ -1,0 +1,1 @@
+- When writing typescript always use proper types dont use any

@@ -1,0 +1,1 @@
+- Always use `--daemon` flag when running gradle
