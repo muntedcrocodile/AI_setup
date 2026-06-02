@@ -79,6 +79,22 @@ The `AGENTS.md` file in this repository serves as the system prompt for the AI a
 
 **Important:** Copy `AGENTS.md` to every directory where you instantiate the agent. For example, if you run `opencode` in your home directory (`~`), you need to copy the file to `~/AGENTS.md`.
 
+### Agent Generator
+
+Generate `AGENTS.md` files from templates using `make_agent_file.py`:
+
+```bash
+# Interactive selection
+python make_agent_file.py <target_directory>
+
+# Example - create AGENTS.md in current directory
+python make_agent_file.py .
+```
+
+Templates are stored in `agents_templates/` with numbered prefixes for ordering. The first 7 templates are selected by default. Use the interactive UI to toggle which templates to include.
+
+Edit `template_config.json` to change the default template selections.
+
 ### General Agentic Usage Advice
 
 - **Project-specific AGENTS.md:** The provided `AGENTS.md` is a template with general steering advice. You are encouraged to add project-specific instructions. Best practice is to only add things you need to tell the agent frequently. For example, if you always need to instruct the agent to perform a certain task, add it to `AGENTS.md` so it doesn't need to be repeated.
