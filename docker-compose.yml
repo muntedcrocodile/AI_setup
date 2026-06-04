@@ -1,7 +1,4 @@
-version: '3.7'
-
 services:
-
   # ollama:
   #   image: ollama/ollama:latest
   #   restart: unless-stopped
@@ -18,7 +15,7 @@ services:
     image: docker.io/redis:7-alpine
     restart: unless-stopped
     volumes:
-      - ./redis:/data
+      - ./data/redis:/data
 
     command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
 
@@ -34,7 +31,7 @@ services:
       - BIND_ADDRESS=0.0.0.0
 
     volumes:
-      - ./searxng:/etc/searxng:ro
+      - ./data/searxng:/etc/searxng:ro
 
     depends_on:
       - redis

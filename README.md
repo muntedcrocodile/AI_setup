@@ -2,14 +2,26 @@
 
 Personal AI agentic setup using opencode with SearXNG search and Chrome DevTools MCP servers.
 
-## Prerequisites
+## Installation
+
+### Quick Install (One-liner)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/muntedcrocodile/AI_setup/refs/heads/master/bootstrap.sh | bash
+```
+
+This will clone the repository to `~/Applications/AI_setup` and run the install script.
+
+### Manual Install
+
+#### Prerequisites
 
 - Linux (or WSL on Windows)
 - [Docker](https://docs.docker.com/engine/install/) - For running SearXNG and Redis containers
 - [Bun](https://bun.sh/) - JavaScript runtime for MCP servers
 - Chromium based browser - For Chrome DevTools automation
 
-### Chromium Setup
+##### Chromium Setup
 
 Install Chromium and create an alias for the start command:
 
@@ -25,8 +37,6 @@ sudo dnf install chromium
 echo 'alias chrome="chromium"' >> ~/.bashrc
 source ~/.bashrc
 ```
-
-## Installation
 
 1. Clone this repository:
 ```bash

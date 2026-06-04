@@ -1,15 +1,24 @@
-#!/home/user/Documents/AI_setup/.venv/bin/python
-import json
+#!/usr/bin/env python3
 import os
-import subprocess
 import sys
 from pathlib import Path
+
+SCRIPT_DIR = Path(__file__).resolve().parent
+VENV_PYTHON = SCRIPT_DIR / ".venv" / "bin" / "python"
+
+if VENV_PYTHON.exists():
+    venv_python = str(VENV_PYTHON)
+    if sys.executable != venv_python:
+        os.execv(venv_python, [venv_python, __file__] + sys.argv[1:])
+
+import json
+import subprocess
 import curses
 import click
 
 from input_popup import input_popup
 
-SCRIPT_DIR = Path(__file__).parent
+SCRIPT_DIR = Path(__file__).resolve().parent
 TEMPLATES_DIR = SCRIPT_DIR / "agents_templates"
 CONFIG_FILE = SCRIPT_DIR / "template_config.json"
 

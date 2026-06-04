@@ -5,7 +5,7 @@ Wants=docker.service
 
 [Service]
 Type=simple
-WorkingDirectory=%h/Applications
+WorkingDirectory=%h/AI_setup
 ExecStart=/usr/bin/docker compose up
 TimeoutStartSec=30min
 Restart=always
