@@ -19,5 +19,8 @@
 
 - Always use the .venv enviroment for running python and install packages by adding them to the `requirements.txt`  file and then installing everything in that file with `./venv/bin/pip install -r requirements.txt`. ALways use the venv if one does not exist create it.
 
+- Don't remove existing comments unless the underlying code theey refer to is changed. Add good minimal comments to places where it makes sense to they should help the reader understand in the abstract what a piece of code is doing if it is not obviouse form the code itself.
+
 - Always use type hints in Python and prefer using click for command line argument parsing
+- Add __pycache__ to .gitignore when working with Python projects
 
