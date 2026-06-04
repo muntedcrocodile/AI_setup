@@ -1,0 +1,1 @@
+- Always use type hints in Python and prefer using click for command line argument parsing
