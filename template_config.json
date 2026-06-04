@@ -2,7 +2,9 @@
   "templates": {
     "011_nextjs_convex_setup": false,
     "012_python_venv": false,
-    "008_bun": true,
+    "014_cpp_c_build": false,
+    "015_consultant": false,
+    "008_bun": false,
     "001_minimal_words": true,
     "013_typescript": false,
     "002_chinese_llm": true,
