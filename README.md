@@ -1,6 +1,17 @@
 # AI Agentic Setup
 
-Personal AI agentic setup using opencode with SearXNG search and Chrome DevTools MCP servers.
+> **An AGENTS.md manager** — a personal AI agentic setup using opencode with SearXNG.
+
+## What is this?
+
+This is a **template-based AGENTS.md manager**. It helps you compose, customize, and deploy `AGENTS.md` files (the system prompt files that steer agent behavior) across your projects using a library of plug-and-play templates.
+
+Features:
+
+- **AGENTS.md template library** — 18+ ready-made templates covering Python, TypeScript, Docker, Chrome DevTools, and more
+- **Interactive template selector** — toggle which templates to include in your generated `AGENTS.md`
+- **Per-project steering** — generate a tailored `AGENTS.md` for any directory in seconds
+- **Full opencode setup** — SearXNG meta search, Chrome DevTools MCP, and pre-configured `opencode.json`
 
 ## Installation
 
@@ -67,12 +78,26 @@ docker compose up -d
 
 ## Usage
 
-1. Navigate to a directory in a terminal and copy the AGENTS.md file to that directory:
+### Quick start: generate an AGENTS.md for any project
+
+Use the **AGENTS.md manager** to compose a tailored `AGENTS.md` from templates:
+
 ```bash
-cp /path/to/AI_setup/AGENTS.md .
+# Interactive template picker — generates AGENTS.md in the target directory
+make_agent_file <target_directory>
+
+# Example — create AGENTS.md in the current directory
+make_agent_file
 ```
 
-2. Run opencode:
+Templates are stored in `make_agents/agents_templates/` with numbered prefixes for ordering. Use the interactive UI to toggle which templates to include. Supports per harness and per llm template management.
+
+Edit `make_agents/template_config.json` to change the default template selections.
+
+### Use the agent
+
+1. Make sure an `AGENTS.md` exists in the directory (generate one above, or copy the default).
+2. Run opencode in that directory:
 ```bash
 opencode
 ```
@@ -91,19 +116,7 @@ The `AGENTS.md` file in this repository serves as the system prompt for the AI a
 
 ### Agent Generator
 
-Generate `AGENTS.md` files from templates using `make_agent_file.py`:
-
-```bash
-# Interactive selection
-python make_agent_file.py <target_directory>
-
-# Example - create AGENTS.md in current directory
-python make_agent_file.py .
-```
-
-Templates are stored in `agents_templates/` with numbered prefixes for ordering. The first 7 templates are selected by default. Use the interactive UI to toggle which templates to include.
-
-Edit `template_config.json` to change the default template selections.
+For full control over template selection, use `make_agent_file.py` directly. See the **Quick start** section above.
 
 ### General Agentic Usage Advice
 

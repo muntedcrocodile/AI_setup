@@ -4,7 +4,7 @@
     "001_minimal_words": false,
     "002_chinese_llm": true,
     "003_chrome_devtools": false,
-    "004_allow_env_mods": false,
+    "004_allow_env_mods": true,
     "005_operation_steering": false,
     "006_lazy_llm": false,
     "007_android_adb_testing": false,
