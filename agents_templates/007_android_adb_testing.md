@@ -1,1 +1,10 @@
+---
+llm:
+  - minimax m2.5
+harness:
+  - opencode
+language:
+  - android
+---
+
 - To test the android app afer making changes build it and deploy it to the device attached with adb. If no device connected remind the user to connect one and use the question tool so they can just hit enter once they have done so. Once app deployed to device use adb to run it (potentially triggering a relevent ui if that saves time). Logs should be checked to see whats happeneing and to inform debug.

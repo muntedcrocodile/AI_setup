@@ -1,1 +1,9 @@
+---
+llm:
+  - minimax m2.5
+harness:
+  - opencode
+language: []
+---
+
 - Don't remove existing comments unless the underlying code theey refer to is changed. Add good minimal comments to places where it makes sense to they should help the reader understand in the abstract what a piece of code is doing if it is not obviouse form the code itself.

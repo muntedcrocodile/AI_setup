@@ -11,179 +11,248 @@ if VENV_PYTHON.exists():
     if sys.executable != venv_python:
         os.execv(venv_python, [venv_python, __file__] + sys.argv[1:])
 
-import json
-import subprocess
 import curses
+import json
+from typing import Any
+
 import click
 
 from input_popup import input_popup
+from template_creator import run_opencode_interactive
+from tree_builder import Tree, load_templates
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 TEMPLATES_DIR = SCRIPT_DIR / "agents_templates"
 CONFIG_FILE = SCRIPT_DIR / "template_config.json"
 
-DEFAULT_CONFIG = {
-    "templates": {}
+DEFAULT_CONFIG: dict[str, Any] = {
+    "templates": {},
+    "ui_state": {"expanded_paths": []},
 }
 
-OPENCODE_PROMPT = """Create a new agent template snippet for the AGENTS.md file. 
 
-The template should be a single instruction line that starts with a dash "-".
-
-Examples of existing templates:
-000_opencode.md ```md
-- An empty message form the use means to continue on
-```
-
-006_lazy_llm.md ```md
-- Never skip doing something because its hard we want a full working appliction. Never implement mock solutions!!!! NO MOCKS!!
-- Don't cheat or take shorcust that will effect the final product take as much time as you need its ok to spend lots of time to solve a complex problem dont feel like u need to cheat in order to complete a task simply keep grinding.
-- Before giving up on a particular task or trying to find a quick fix/bypass search the internet for documentationon the original solution before proceeding
-- Believe in yourself dont give up just because a task iss hard you are smart and capable and very persistent at achiving the task even if it is very tedious eor difficult
-```
-
-Directory context: {directory}
-
-User's description of the template/s they want:
-{description}
-
-Please create a concise template/s that captures what the user wants.
-
-The new template/s need to be placed in {directory} as new file/s. This is not a modification to any existing AGENTS.md file but the creation of a new template snippet file that will be a used in the creation of new AGENTS.md files in future. Do nto modify the AGENTS.md file simply create new snippet templates in {directory}
-"""
-
-
-def load_config():
+def load_config() -> dict[str, Any]:
     if CONFIG_FILE.exists():
         with open(CONFIG_FILE, "r") as f:
-            return json.load(f)
-    return DEFAULT_CONFIG
+            data = json.load(f)
+        if "templates" not in data:
+            data["templates"] = {}
+        if "ui_state" not in data:
+            data["ui_state"] = {"expanded_paths": []}
+        if "expanded_paths" not in data["ui_state"]:
+            data["ui_state"]["expanded_paths"] = []
+        return data
+    return json.loads(json.dumps(DEFAULT_CONFIG))
 
 
-def get_templates():
-    templates = {}
-    if TEMPLATES_DIR.exists():
-        for f in TEMPLATES_DIR.glob("*.md"):
-            templates[f.stem] = f.read_text()
-    return templates
+def save_config(config: dict[str, Any]) -> None:
+    with open(CONFIG_FILE, "w") as f:
+        json.dump(config, f, indent=2)
+        f.write("\n")
 
 
-def run_opencode_interactive(directory, description):
-    directory = os.path.join(directory, "agents_templates")
-    prompt = OPENCODE_PROMPT.format(directory=directory, description=description, templates_dir=str(TEMPLATES_DIR))
-    subprocess.run(
-        ["opencode", "--prompt", prompt],
-        cwd=directory,
-        check=False
-    )
+def draw_header(stdscr, target_dir: str) -> None:
+    h, w = stdscr.getmaxyx()
+    title = f" Select templates for {target_dir} "
+    try:
+        stdscr.addstr(0, 0, title.ljust(w)[:w], curses.A_REVERSE)
+    except curses.error:
+        pass
 
 
-def run_main(target_dir):
+def draw_footer(stdscr) -> None:
+    h, w = stdscr.getmaxyx()
+    msg = " Space: toggle | ←/→: collapse/expand | Enter: confirm | ^S: save | ^A: add | Esc: quit "
+    try:
+        stdscr.addstr(h - 1, 0, msg.ljust(w)[:w], curses.A_DIM)
+    except curses.error:
+        pass
+
+
+def show_message(stdscr, msg: str, delay_ms: int = 1000) -> None:
+    h, w = stdscr.getmaxyx()
+    try:
+        stdscr.addstr(h - 2, 0, msg.ljust(w)[:w], curses.A_BOLD)
+        stdscr.refresh()
+    except curses.error:
+        pass
+    curses.napms(delay_ms)
+
+
+def adjust_scroll(cursor_idx: int, scroll: int, visible_count: int, viewport_h: int) -> int:
+    max_visible = viewport_h - 3
+    if max_visible <= 0:
+        return 0
+    if cursor_idx < scroll:
+        return cursor_idx
+    if cursor_idx >= scroll + max_visible:
+        return cursor_idx - max_visible + 1
+    return max(0, scroll)
+
+
+def main(stdscr, target_dir: str):
+    try:
+        curses.cbreak()
+        curses.noecho()
+        stdscr.keypad(True)
+        curses.curs_set(0)
+    except curses.error as exc:
+        raise RuntimeError(
+            "Could not initialise the terminal UI. "
+            "make_agent_file.py must be run from an interactive terminal "
+            "(a TTY is required for curses). "
+            f"Underlying error: {exc}"
+        ) from exc
+
+    templates = load_templates(TEMPLATES_DIR)
+    if not templates:
+        stdscr.clear()
+        try:
+            stdscr.addstr(0, 0, "No templates found in agents_templates/")
+        except curses.error:
+            pass
+        stdscr.getch()
+        return None
+
+    config = load_config()
+    selected = {name: bool(config["templates"].get(name, False)) for name in templates}
+    tree = Tree(templates)
+    tree.apply_expansion_state(config["ui_state"].get("expanded_paths", []))
+
+    visible = tree.visible_nodes()
+    cursor_idx = 0
+    scroll = 0
+
+    def persist() -> None:
+        config["templates"] = {n: bool(selected.get(n, False)) for n in templates}
+        config["ui_state"]["expanded_paths"] = tree.expanded_paths()
+        save_config(config)
+
+    def rebuild() -> None:
+        nonlocal tree, visible, cursor_idx, scroll
+        tree = Tree(templates)
+        tree.apply_expansion_state(config["ui_state"].get("expanded_paths", []))
+        visible = tree.visible_nodes()
+        cursor_idx = 0
+        scroll = 0
+
+    while True:
+        stdscr.clear()
+        h, w = stdscr.getmaxyx()
+        draw_header(stdscr, target_dir)
+        scroll = adjust_scroll(cursor_idx, scroll, len(visible), h)
+
+        body_start_y = 1
+        if scroll > 0:
+            try:
+                stdscr.addstr(
+                    body_start_y,
+                    0,
+                    f"  … {scroll} hidden above".ljust(w)[:w],
+                    curses.A_DIM,
+                )
+            except curses.error:
+                pass
+            body_start_y += 1
+
+        for offset, node in enumerate(visible[scroll:]):
+            y = body_start_y + offset
+            if y >= h - 1:
+                break
+            node.render_self(
+                stdscr,
+                y=y,
+                depth=node.path.count("/"),
+                width=w,
+                selected=selected,
+                is_cursor=(scroll + offset == cursor_idx),
+            )
+        draw_footer(stdscr)
+        stdscr.refresh()
+
+        key = stdscr.getch()
+
+        if not visible:
+            continue
+
+        if key == 27:
+            persist()
+            return None
+        if key == ord("\n"):
+            persist()
+            break
+        if key == ord(" "):
+            visible[cursor_idx].toggle_selection(selected)
+            persist()
+        elif key in (curses.KEY_RIGHT, ord("l")):
+            if visible[cursor_idx].expand():
+                visible = tree.visible_nodes()
+                persist()
+        elif key in (curses.KEY_LEFT, ord("h")):
+            if visible[cursor_idx].collapse():
+                visible = tree.visible_nodes()
+                persist()
+        elif key == curses.KEY_UP:
+            if cursor_idx > 0:
+                cursor_idx -= 1
+        elif key == curses.KEY_DOWN:
+            if cursor_idx < len(visible) - 1:
+                cursor_idx += 1
+        elif key == 19:
+            persist()
+            show_message(stdscr, "Defaults saved!")
+        elif key == 1:
+            try:
+                description = input_popup(stdscr, "Add new template")
+            except curses.error:
+                description = None
+            if description:
+                run_opencode_interactive(str(SCRIPT_DIR), description)
+            templates = load_templates(TEMPLATES_DIR)
+            config = load_config()
+            selected = {name: bool(config["templates"].get(name, False)) for name in templates}
+            rebuild()
+            persist()
+            return "restart"
+
+    output_lines = []
+    for name in sorted(templates.keys()):
+        if selected.get(name, False):
+            body = templates[name]["body"].strip()
+            if body:
+                output_lines.append(body)
+    output = "# AGENTS\n\n" + "\n\n".join(output_lines) + "\n"
+    target_path = Path(target_dir) / "AGENTS.md"
+    target_path.write_text(output)
+    print(f"Created {target_path}")
+    stdscr.keypad(False)
+    return None
+
+
+def run_main(target_dir: str) -> None:
+    if not sys.stdin.isatty() or not sys.stdout.isatty():
+        print(
+            "Error: make_agent_file.py requires an interactive terminal "
+            "(a TTY is required for the selection UI).",
+            file=sys.stderr,
+        )
+        sys.exit(1)
     while True:
         stdscr = curses.initscr()
         try:
             result = main(stdscr, target_dir)
+        except RuntimeError as exc:
+            curses.endwin()
+            print(f"Error: {exc}", file=sys.stderr)
+            sys.exit(1)
         finally:
             try:
                 curses.endwin()
             except curses.error:
                 pass
         if result != "restart":
-            break
-        os.execv(sys.executable, [sys.executable, __file__, "select", target_dir])
-
-
-def main(stdscr, target_dir):
-    curses.cbreak()
-    curses.noecho()
-    stdscr.keypad(True)
-
-    templates = get_templates()
-    if not templates:
-        stdscr.addstr(0, 0, "No templates found in agents_templates/")
-        stdscr.getch()
-        return
-
-    config = load_config()
-    defaults = config.get("templates", {})
-
-    selected = {name: defaults.get(name, False) for name in templates}
-
-    curses.curs_set(0)
-    stdscr.clear()
-    height, width = stdscr.getmaxyx()
-
-    current_idx = 0
-    template_names = sorted(templates.keys())
-    scroll_offset = 0
-
-    while True:
-        stdscr.clear()
-        h, w = stdscr.getmaxyx()
-
-        title = f"Select templates for {target_dir}"
-        stdscr.addstr(0, 0, title, curses.A_REVERSE)
-
-        max_visible = h - 4
-        if max_visible > 0:
-            if current_idx < scroll_offset:
-                scroll_offset = current_idx
-            elif current_idx >= scroll_offset + max_visible:
-                scroll_offset = current_idx - max_visible + 1
-        scroll_offset = max(0, scroll_offset)
-
-        for i, name in enumerate(template_names):
-            y = i - scroll_offset + 2
-            if y < 2 or y >= h - 2:
-                continue
-            prefix = "[x]" if selected[name] else "[ ]"
-            attr = curses.A_REVERSE if i == current_idx else curses.A_NORMAL
-            stdscr.addstr(y, 0, f" {prefix} {name}", attr)
-
-        stdscr.addstr(h - 2, 0, "Space: toggle | Enter: confirm | Ctrl+S: save defaults | Ctrl+A: add template | Esc: quit", curses.A_DIM)
-
-        key = stdscr.getch()
-
-        if key == 27:
             return
-        elif key == ord("\n"):
-            break
-        elif key == ord(" "):
-            selected[template_names[current_idx]] = not selected[template_names[current_idx]]
-        elif key == 19:
-            config["templates"] = selected
-            with open(CONFIG_FILE, "w") as f:
-                json.dump(config, f, indent=2)
-            stdscr.addstr(h - 3, 0, "Defaults saved!                                          ", curses.A_BOLD)
-            stdscr.refresh()
-            curses.napms(1000)
-        elif key == 1:
-            description = input_popup(stdscr, "Add new template")
-            if description:
-                run_opencode_interactive(str(SCRIPT_DIR), description)
-                templates = get_templates()
-                template_names = sorted(templates.keys())
-                selected = {name: defaults.get(name, False) for name in templates}
-                current_idx = 0
-                scroll_offset = 0
-                return "restart"
-        elif key == curses.KEY_UP and current_idx > 0:
-            current_idx -= 1
-        elif key == curses.KEY_DOWN and current_idx < len(template_names) - 1:
-            current_idx += 1
-
-    output_lines = []
-    for name in sorted(template_names):
-        if selected[name]:
-            output_lines.append(templates[name].strip())
-
-    output = "# AGENTS\n\n" + "\n\n".join(output_lines) + "\n"
-    target_path = Path(target_dir) / "AGENTS.md"
-    target_path.write_text(output + "\n")
-
-    print(f"Created {target_path}")
-    stdscr.keypad(False)
-    return
+        os.execv(sys.executable, [sys.executable, __file__, "select", target_dir])
 
 
 @click.group(invoke_without_command=True)
@@ -201,22 +270,48 @@ def select(ctx, directory):
 
 
 @cli.command()
-@click.argument("description", required=False)
-def add(description):
-    if description:
-        run_opencode_interactive(str(SCRIPT_DIR), description)
-
+@click.argument("description", required=False, metavar="DESCRIPTION")
+@click.pass_context
+def add(ctx, description):
+    if not description or not description.strip():
+        click.echo(
+            f"Error: '{ctx.command.name}' requires a non-empty DESCRIPTION "
+            "(a natural language description of the template/s to create).",
+            err=True,
+        )
+        click.echo(
+            f"Usage: {ctx.command_path} DESCRIPTION",
+            err=True,
+        )
+        click.echo(
+            "Example: make_agent_file add \"a template for rust error handling\"",
+            err=True,
+        )
+        ctx.exit(2)
+    description = description.strip()
+    run_opencode_interactive(str(SCRIPT_DIR), description)
+    if not sys.stdin.isatty() or not sys.stdout.isatty():
+        print(
+            "Error: make_agent_file.py requires an interactive terminal "
+            "(a TTY is required for the selection UI).",
+            file=sys.stderr,
+        )
+        sys.exit(1)
     while True:
         stdscr = curses.initscr()
         try:
             result = main(stdscr, str(SCRIPT_DIR))
+        except RuntimeError as exc:
+            curses.endwin()
+            print(f"Error: {exc}", file=sys.stderr)
+            sys.exit(1)
         finally:
             try:
                 curses.endwin()
             except curses.error:
                 pass
         if result != "restart":
-            break
+            return
         os.execv(sys.executable, [sys.executable, __file__, "select", str(SCRIPT_DIR)])
 
 

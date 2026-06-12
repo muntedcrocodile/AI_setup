@@ -1,20 +1,30 @@
 {
   "templates": {
+    "000_opencode": true,
+    "001_minimal_words": false,
+    "002_chinese_llm": true,
+    "003_chrome_devtools": false,
+    "004_allow_env_mods": false,
+    "005_operation_steering": false,
+    "006_lazy_llm": false,
+    "007_android_adb_testing": false,
+    "008_bun": false,
+    "009_docker_logs": false,
+    "010_gradle": false,
     "011_nextjs_convex_setup": false,
-    "012_python_venv": false,
+    "012_python_venv": true,
+    "013_typescript": false,
     "014_cpp_c_build": false,
     "015_consultant": false,
-    "008_bun": false,
-    "001_minimal_words": true,
-    "013_typescript": false,
-    "002_chinese_llm": true,
-    "010_gradle": false,
-    "003_chrome_devtools": true,
-    "000_opencode": true,
-    "005_operation_steering": true,
-    "006_lazy_llm": true,
-    "004_allow_env_mods": true,
-    "009_docker_logs": false,
-    "007_android_adb_testing": false
+    "016_comments": false,
+    "017_python_preferences": true,
+    "018_create_a_test": false
+  },
+  "ui_state": {
+    "expanded_paths": [
+      "opencode",
+      "opencode/minimax m3",
+      "opencode/minimax m3/python"
+    ]
   }
 }

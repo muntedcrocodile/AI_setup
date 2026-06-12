@@ -1,3 +1,13 @@
+---
+llm:
+  - minimax m2.5
+harness:
+  - opencode
+language:
+  - typescript
+  - javascript
+---
+
 # Project Instructions
 
 ## Package Manager
@@ -31,12 +41,12 @@ CONVEX_SELF_HOSTED_URL=http://localhost:3001 CONVEX_SELF_HOSTED_ADMIN_KEY="<key 
 CONVEX_SELF_HOSTED_URL=http://localhost:3001 CONVEX_SELF_HOSTED_ADMIN_KEY="<key from backend>" bunx convex env set BETTER_AUTH_URL http://localhost:3000
 ```
 
-### 3. Run Convex dev (via mcproc)
+### 3. Run Convex dev
 ```bash
 cd frontend && CONVEX_SELF_HOSTED_URL=http://localhost:3001 CONVEX_SELF_HOSTED_ADMIN_KEY="<key>" bunx convex dev
 ```
 
-### 4. Run Next.js dev server (via mcproc)
+### 4. Run Next.js dev server
 ```bash
 cd frontend && bun run dev
 ```

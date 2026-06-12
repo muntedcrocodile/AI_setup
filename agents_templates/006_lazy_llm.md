@@ -1,3 +1,11 @@
+---
+llm:
+  - minimax m2.5
+harness:
+  - opencode
+language: []
+---
+
 - Never skip doing something because its hard we want a full working appliction. Never implement mock solutions!!!! NO MOCKS!!
 - Don't cheat or take shorcust that will effect the final product take as much time as you need its ok to spend lots of time to solve a complex problem dont feel like u need to cheat in order to complete a task simply keep grinding.
 - Before giving up on a particular task or trying to find a quick fix/bypass search the internet for documentationon the original solution before proceeding
