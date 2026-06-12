@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import logging
 import os
 import sys
 from pathlib import Path
@@ -25,6 +26,8 @@ from tree_builder import Tree, load_templates
 SCRIPT_DIR = Path(__file__).resolve().parent
 TEMPLATES_DIR = SCRIPT_DIR / "agents_templates"
 CONFIG_FILE = SCRIPT_DIR / "template_config.json"
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_CONFIG: dict[str, Any] = {
     "templates": {},
@@ -255,17 +258,16 @@ def main(stdscr, target_dir: str):
     output = "# AGENTS\n\n" + "\n\n".join(output_lines) + "\n"
     target_path = Path(target_dir) / "AGENTS.md"
     target_path.write_text(output)
-    print(f"Created {target_path}")
+    logger.info("Created %s", target_path)
     stdscr.keypad(False)
     return None
 
 
 def run_main(target_dir: str) -> None:
     if not sys.stdin.isatty() or not sys.stdout.isatty():
-        print(
-            "Error: make_agent_file.py requires an interactive terminal "
-            "(a TTY is required for the selection UI).",
-            file=sys.stderr,
+        logger.error(
+            "make_agent_file.py requires an interactive terminal "
+            "(a TTY is required for the selection UI)."
         )
         sys.exit(1)
     while True:
@@ -274,7 +276,7 @@ def run_main(target_dir: str) -> None:
             result = main(stdscr, target_dir)
         except RuntimeError as exc:
             curses.endwin()
-            print(f"Error: {exc}", file=sys.stderr)
+            logger.error("%s", exc)
             sys.exit(1)
         finally:
             try:
@@ -289,6 +291,11 @@ def run_main(target_dir: str) -> None:
 @click.group(invoke_without_command=True)
 @click.pass_context
 def cli(ctx):
+    if not logging.getLogger().handlers:
+        logging.basicConfig(
+            level=logging.INFO,
+            format="%(levelname)s: %(message)s",
+        )
     if ctx.invoked_subcommand is None:
         ctx.invoke(select)
 
@@ -322,10 +329,9 @@ def add(ctx, description):
     description = description.strip()
     run_opencode_interactive(str(SCRIPT_DIR), description)
     if not sys.stdin.isatty() or not sys.stdout.isatty():
-        print(
-            "Error: make_agent_file.py requires an interactive terminal "
-            "(a TTY is required for the selection UI).",
-            file=sys.stderr,
+        logger.error(
+            "make_agent_file.py requires an interactive terminal "
+            "(a TTY is required for the selection UI)."
         )
         sys.exit(1)
     while True:
@@ -334,7 +340,7 @@ def add(ctx, description):
             result = main(stdscr, str(SCRIPT_DIR))
         except RuntimeError as exc:
             curses.endwin()
-            print(f"Error: {exc}", file=sys.stderr)
+            logger.error("%s", exc)
             sys.exit(1)
         finally:
             try:
