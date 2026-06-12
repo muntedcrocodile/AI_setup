@@ -63,7 +63,7 @@ def draw_header(stdscr, target_dir: str) -> None:
 
 def draw_footer(stdscr) -> None:
     h, w = stdscr.getmaxyx()
-    msg = " Space: toggle | ←/→: collapse/expand | Enter: confirm | ^S: save | ^A: add | Esc: quit "
+    msg = " Space: toggle | ←/→: collapse/expand | ^R: refresh | ^S: save | ^A: add | Enter: confirm | Esc: quit "
     try:
         stdscr.addstr(h - 1, 0, msg.ljust(w)[:w], curses.A_DIM)
     except curses.error:
@@ -137,6 +137,32 @@ def main(stdscr, target_dir: str):
         cursor_idx = 0
         scroll = 0
 
+    def refresh() -> int:
+        """Re-read the template files from disk and rebuild the tree.
+
+        Preserves the current cursor by path if that node still exists;
+        otherwise falls back to the top of the list. Returns the number
+        of templates now loaded so the caller can show a status message.
+        """
+        nonlocal templates, selected, tree, visible, cursor_idx, scroll
+        prior_path = visible[cursor_idx].path if visible and 0 <= cursor_idx < len(visible) else ""
+        templates = load_templates(TEMPLATES_DIR)
+        selected = {name: bool(selected.get(name, False)) for name in templates}
+        tree = Tree(templates)
+        tree.apply_expansion_state(config["ui_state"].get("expanded_paths", []))
+        visible = tree.visible_nodes()
+        if prior_path:
+            for idx, node in enumerate(visible):
+                if node.path == prior_path:
+                    cursor_idx = idx
+                    break
+            else:
+                cursor_idx = 0
+        else:
+            cursor_idx = 0
+        scroll = 0
+        return len(templates)
+
     while True:
         stdscr.clear()
         h, w = stdscr.getmaxyx()
@@ -202,6 +228,10 @@ def main(stdscr, target_dir: str):
         elif key == 19:
             persist()
             show_message(stdscr, "Defaults saved!")
+        elif key == 18:
+            count = refresh()
+            persist()
+            show_message(stdscr, f"Refreshed — {count} template(s) loaded.")
         elif key == 1:
             try:
                 description = input_popup(stdscr, "Add new template")
