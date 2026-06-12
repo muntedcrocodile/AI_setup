@@ -17,8 +17,7 @@
     "014_cpp_c_build": false,
     "015_consultant": false,
     "016_comments": false,
-    "017_python_preferences": true,
-    "018_create_a_test": false
+    "017_python_preferences": true
   },
   "ui_state": {
     "expanded_paths": [

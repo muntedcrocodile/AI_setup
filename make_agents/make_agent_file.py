@@ -4,7 +4,8 @@ import sys
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-VENV_PYTHON = SCRIPT_DIR / ".venv" / "bin" / "python"
+PROJECT_ROOT = SCRIPT_DIR.parent
+VENV_PYTHON = PROJECT_ROOT / ".venv" / "bin" / "python"
 
 if VENV_PYTHON.exists():
     venv_python = str(VENV_PYTHON)

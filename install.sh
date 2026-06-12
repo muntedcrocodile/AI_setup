@@ -148,8 +148,8 @@ if [ -f "$REQUIREMENTS_FILE" ]; then
 fi
 
 # ============ Add make_agent_file to PATH ============
-if [ -f "$SCRIPT_DIR/make_agent_file.py" ]; then
-    chmod +x "$SCRIPT_DIR/make_agent_file.py"
+if [ -f "$SCRIPT_DIR/make_agents/make_agent_file.py" ]; then
+    chmod +x "$SCRIPT_DIR/make_agents/make_agent_file.py"
 
     # Create symlink in ~/.local/bin if not exists
     # Create ~/.local/bin if it doesn't exist
@@ -157,7 +157,7 @@ if [ -f "$SCRIPT_DIR/make_agent_file.py" ]; then
 
     if [ ! -L "$HOME/.local/bin/make_agent_file" ]; then
         echo "Adding make_agent_file to PATH..."
-        ln -sf "$SCRIPT_DIR/make_agent_file.py" "$HOME/.local/bin/make_agent_file"
+        ln -sf "$SCRIPT_DIR/make_agents/make_agent_file.py" "$HOME/.local/bin/make_agent_file"
     else
         echo "make_agent_file already in PATH"
     fi
