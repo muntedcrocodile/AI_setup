@@ -23,8 +23,7 @@ After the closing `---` line, place the instruction body.
 ### 000_opencode.md
 ```md
 ---
-llm:
-  - minimax m2.5
+llm: []
 harness:
   - opencode
 language: []
@@ -54,6 +53,7 @@ language: []
 ---
 llm:
   - minimax m2.5
+  - minimax m3
 harness:
   - opencode
 language:
@@ -63,16 +63,20 @@ language:
 - To test the android app afer making changes build it and deploy it to the device attached with adb. If no device connected remind the user to connect one and use the question tool so they can just hit enter once they have done so. Once app deployed to device use adb to run it (potentially triggering a relevent ui if that saves time). Logs should be checked to see whats happeneing and to inform debug.
 ```
 
-## Placeholders
-
-The following placeholders are substituted into the prompt before being sent to opencode:
+## Information
 
 - `{directory}` — absolute path to the `agents_templates/` directory in which new template files should be created.
 - `{description}` — the user's natural language description of the template/s they want.
+- `{available_llms}` — a bullet list of LLM names that already appear in other template files. Use this list to ask the user which LLM(s) the new template applies to.
 
 ## Guidance
 
-- Pick a sensible default `llm` (minimax m2.5) and `harness` (opencode) unless the user specifies otherwise.
-- Choose `language` entries that best describe the template's domain. Use `[]` if it is general purpose.
+- **Harness:** default to `opencode` unless the user explicitly names a different harness.
+- **LLMs:** the user must select which LLMs this template applies to. You MUST use your interactive question/ask tool (multi-select) to present the list of available LLMs below. Do not invent LLM names that are not in the list; if the user wants a new LLM, ask them to type it and then add it to the selection. Allow the user to select multiple LLMs (a template can apply to several). Use `[]` only if the user explicitly says the template is model-agnostic.
+
+  Available LLMs already used in the project:
+  {available_llms}
+
+- **Language:** choose `language` entries that best describe the template's domain. Use `[]` if it is general purpose.
 - Each new file should be named with a numeric prefix followed by an underscore and a short slug (e.g. `018_my_new_template.md`).
 - Do not modify any existing `AGENTS.md` file. Do not modify other existing template snippet files. Only create new template snippet files in `{directory}`.
