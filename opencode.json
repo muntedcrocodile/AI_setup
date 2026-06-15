@@ -1,12 +1,19 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "permission": {
-    "websearch": "deny"
+    "websearch": "deny",
+    "external_directory": {
+      "/tmp/**": "allow"
+    }
   },
   "mcp": {
     "searxng": {
       "type": "local",
-      "command": ["bunx", "-y", "mcp-searxng"],
+      "command": [
+        "bunx",
+        "-y",
+        "mcp-searxng"
+      ],
       "environment": {
         "SEARXNG_URL": "http://localhost:1080"
       },
@@ -14,7 +21,11 @@
     },
     "chrome-devtools": {
       "type": "local",
-      "command": ["bunx", "-y", "chrome-devtools-mcp"],
+      "command": [
+        "bunx",
+        "-y",
+        "chrome-devtools-mcp"
+      ],
       "enabled": true
     }
   },
@@ -24,9 +35,22 @@
         "minimax/minimax-m2.5": {
           "options": {
             "provider": {
-              "order": ["inceptron/fp8", "akashml/fp8"],
+              "order": [
+                "inceptron/fp8",
+                "akashml/fp8"
+              ],
               "allow_fallbacks": true
             }
+          }
+        }
+      },
+      "minimax/minimax-m3": {
+        "options": {
+          "provider": {
+            "order": [
+              "novita"
+            ],
+            "allow_fallbacks": true
           }
         }
       }
