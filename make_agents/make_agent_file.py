@@ -309,8 +309,13 @@ def select(ctx, directory):
 
 @cli.command()
 @click.argument("description", required=False, metavar="DESCRIPTION")
+@click.option(
+    "--directory",
+    default=None,
+    help="Target directory where AGENTS.md will be written. Defaults to the current working directory.",
+)
 @click.pass_context
-def add(ctx, description):
+def add(ctx, description, directory: str | None):
     if not description or not description.strip():
         click.echo(
             f"Error: '{ctx.command.name}' requires a non-empty DESCRIPTION "
@@ -327,6 +332,8 @@ def add(ctx, description):
         )
         ctx.exit(2)
     description = description.strip()
+    original_cwd = os.getcwd()
+    target_dir = directory if directory is not None else original_cwd
     run_opencode_interactive(str(SCRIPT_DIR), description)
     if not sys.stdin.isatty() or not sys.stdout.isatty():
         logger.error(
@@ -337,7 +344,7 @@ def add(ctx, description):
     while True:
         stdscr = curses.initscr()
         try:
-            result = main(stdscr, str(SCRIPT_DIR))
+            result = main(stdscr, target_dir)
         except RuntimeError as exc:
             curses.endwin()
             logger.error("%s", exc)
@@ -349,7 +356,7 @@ def add(ctx, description):
                 pass
         if result != "restart":
             return
-        os.execv(sys.executable, [sys.executable, __file__, "select", str(SCRIPT_DIR)])
+        os.execv(sys.executable, [sys.executable, __file__, "select", target_dir])
 
 
 if __name__ == "__main__":

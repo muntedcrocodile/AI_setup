@@ -99,11 +99,19 @@ OPENCODE_CONFIG_DIR="$HOME/.config/opencode"
 mkdir -p "$OPENCODE_CONFIG_DIR"
 
 if [ -f "$SCRIPT_DIR/opencode.json" ]; then
-    if [ ! -f "$OPENCODE_CONFIG_DIR/opencode.json" ] || ! diff -q "$SCRIPT_DIR/opencode.json" "$OPENCODE_CONFIG_DIR/opencode.json" > /dev/null 2>&1; then
-        echo "Copying opencode.json to config directory..."
-        cp "$SCRIPT_DIR/opencode.json" "$OPENCODE_CONFIG_DIR/"
+    # Symlink opencode.json so the installed config always mirrors this repo's
+    # single source of truth. If a real file (or broken symlink) is already
+    # in place, replace it with a symlink to the repo file.
+    if [ -L "$OPENCODE_CONFIG_DIR/opencode.json" ] && [ "$(readlink -f "$OPENCODE_CONFIG_DIR/opencode.json")" = "$(readlink -f "$SCRIPT_DIR/opencode.json")" ]; then
+        echo "opencode.json symlink already points to repo"
     else
-        echo "opencode.json already up to date"
+        if [ -e "$OPENCODE_CONFIG_DIR/opencode.json" ] || [ -L "$OPENCODE_CONFIG_DIR/opencode.json" ]; then
+            echo "Replacing existing opencode.json with symlink to repo..."
+            rm -f "$OPENCODE_CONFIG_DIR/opencode.json"
+        else
+            echo "Symlinking opencode.json to config directory..."
+        fi
+        ln -s "$SCRIPT_DIR/opencode.json" "$OPENCODE_CONFIG_DIR/opencode.json"
     fi
 fi
 
