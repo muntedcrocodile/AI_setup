@@ -43,15 +43,16 @@
               "allow_fallbacks": true
             }
           }
-        }
-      },
-      "minimax/minimax-m3": {
-        "options": {
-          "provider": {
-            "order": [
-              "novita"
-            ],
-            "allow_fallbacks": true
+        },
+        "minimax/minimax-m3": {
+          "options": {
+            "provider": {
+              "order": [
+                "novita",
+                "atlas-cloud/fp8"
+              ],
+              "allow_fallbacks": true
+            }
           }
         }
       }
