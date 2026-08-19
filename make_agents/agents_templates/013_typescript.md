@@ -1,6 +1,7 @@
 ---
 llm:
   - minimax m2.5
+  - minimax m3
 harness:
   - opencode
 language:

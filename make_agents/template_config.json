@@ -1,27 +1,37 @@
 {
   "templates": {
     "000_opencode": true,
-    "001_minimal_words": false,
-    "002_chinese_llm": true,
+    "001_wiki_stack": false,
+    "002_chinese_llm": false,
+    "002_minimal_words": false,
     "003_chrome_devtools": false,
-    "004_allow_env_mods": true,
+    "004_allow_env_mods": false,
     "005_operation_steering": false,
     "006_lazy_llm": false,
-    "007_android_adb_testing": false,
     "008_bun": false,
     "009_docker_logs": false,
     "010_gradle": false,
     "011_nextjs_convex_setup": false,
     "012_python_venv": true,
     "013_typescript": false,
-    "014_cpp_c_build": true,
-    "015_consultant": true,
-    "016_comments": true,
-    "017_python_preferences": true
+    "014_cpp_c_build": false,
+    "015_consultant": false,
+    "016_comments": false,
+    "017_python_preferences": true,
+    "018_incremental_git_commits": false,
+    "020_tailwind_shadcn": false,
+    "021_android_adb_testing": false,
+    "021_coder_subagent": false
   },
   "ui_state": {
     "expanded_paths": [
       "opencode",
+      "opencode/minimax m2.5/android",
+      "opencode/minimax m2.5/javascript",
+      "opencode/minimax m2.5/notes",
+      "opencode/minimax m2.5/python",
+      "opencode/minimax m2.5/react",
+      "opencode/minimax m2.5/typescript",
       "opencode/minimax m3",
       "opencode/minimax m3/python"
     ]

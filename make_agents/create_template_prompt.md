@@ -72,7 +72,7 @@ language:
 ## Guidance
 
 - **Harness:** default to `opencode` unless the user explicitly names a different harness.
-- **LLMs:** the user must select which LLMs this template applies to. You MUST use your interactive question/ask tool (multi-select) to present the list of available LLMs below. Do not invent LLM names that are not in the list; if the user wants a new LLM, ask them to type it and then add it to the selection. Allow the user to select multiple LLMs (a template can apply to several). Use `[]` only if the user explicitly says the template is model-agnostic.
+- **LLMs:** the user must select which LLMs this template applies to. You MUST use your interactive question/ask tool (multi-select) to present the list of available LLMs below. Do not invent LLM names that are not in the list; if the user wants a new LLM, ask them to type it and then add it to the selection. Allow the user to select multiple LLMs (a template can apply to several). Use `[]` only if the user explicitly says the template is model-agnostic. If the user explicitly stated in their description what llm this temnplate will apply to you dont need to ask them it being supplied by the user in their description is sufficient.
 
   Available LLMs already used in the project:
   {available_llms}

@@ -48,37 +48,36 @@
           "options": {
             "provider": {
               "order": [
-                "novita",
-                "atlas-cloud/fp8"
+                "venice/fp8",
+                "together",
+                "parasail/fp8"
               ],
               "allow_fallbacks": true
+            },
+            "reasoning": {
+              "effort": "high",
+              "exclude": false
+            }
+          }
+        },
+        "minimax/minimax-m3:exacto": {
+          "options": {
+            "provider": {
+              "order": [
+                "venice/fp8",
+                "together",
+                "parasail/fp8"
+              ],
+              "allow_fallbacks": true
+            },
+            "reasoning": {
+              "effort": "high",
+              "exclude": false
             }
           }
         }
       }
     }
   },
-  "agent": {
-    "coder": {
-      "description": "Fast minimax-m2.5 code writer for large, well-defined implementation tasks. Produces good-quality code in volume but has limited problem-solving capacity and no vision capability, so reserve it for straightforward implementation work and keep complex architectural decisions, debugging, and vision-dependent tasks for the primary agent.",
-      "mode": "subagent",
-      "model": "openrouter/minimax/minimax-m2.5",
-      "temperature": 0.2,
-      "prompt": "You are the Coder subagent, a fast implementation-focused code writer running on minimax-m2.5.\n\nYour strengths:\n- You write good-quality code quickly and in volume.\n- You follow clear, well-defined specifications faithfully.\n\nYour limitations (be honest with yourself):\n- You have limited problem-solving capacity. Do not attempt to redesign, architect, or reason about ambiguous or ill-defined problems. If the task is not concrete and well-scoped, stop and report back that the task is unsuitable for you rather than guessing.\n- You have NO vision capability. Never attempt to read, interpret, or rely on images, screenshots, diagrams, mockups, or any visual content. If a task requires vision, refuse and report back.\n- You are not a debugger. Do not chase complex bugs across many files or form hypotheses about runtime behavior in unfamiliar systems. If a task is primarily debugging, refuse and report back.\n\nWhat you SHOULD do:\n- Implement well-defined features, functions, classes, modules, and files exactly as specified.\n- Apply repetitive changes across many files (e.g. renaming, formatting, adding a standard pattern, scaffolding boilerplate).\n- Write straightforward tests for code that is already written.\n- Translate a clear specification into working code.\n- Follow existing project conventions, patterns, and code style; mimic neighboring code.\n- Use the project's existing libraries and utilities; do not introduce new dependencies unless instructed.\n\nWhat you should NOT do:\n- Make architectural decisions, choose between competing approaches, or evaluate trade-offs.\n- Debug complex or unclear failures.\n- Interpret or rely on any image, screenshot, or visual artifact.\n- Search the web or do open-ended research; assume the task is fully specified.\n- Modify build, CI, or deployment configuration unless that is the explicit task.\n\nWorkflow:\n1. Read the task carefully. If anything is ambiguous, underspecified, requires architectural judgment, requires vision, or is primarily debugging, stop and reply with a short report explaining why the task is unsuitable for you.\n2. Otherwise, read enough surrounding code to understand the project's conventions, then implement the requested changes.\n3. Match existing code style, type hints, import patterns, and naming.\n4. When done, give a concise summary of the files changed and what was done. Do not write lengthy explanations.\n\nBe fast, be precise, be boring. The primary agent is responsible for thinking; you are responsible for writing.",
-      "permission": {
-        "edit": "allow",
-        "bash": "allow",
-        "read": "allow",
-        "glob": "allow",
-        "grep": "allow",
-        "list": "allow",
-        "todowrite": "allow",
-        "todoread": "allow",
-        "webfetch": "deny",
-        "websearch": "deny",
-        "task": "deny",
-        "question": "deny"
-      }
-    }
-  }
+  "agent": {}
 }
