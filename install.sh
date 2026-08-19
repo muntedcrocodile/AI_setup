@@ -5,7 +5,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VENV_DIR="$SCRIPT_DIR/.venv"
 REQUIREMENTS_FILE="$SCRIPT_DIR/requirements.txt"
 T3CODE_REPO_URL="https://github.com/muntedcrocodile/t3code.git"
-T3CODE_REPO_REF="ai-setup-live"
+T3CODE_REPO_REF="main"
 T3CODE_DIR="$SCRIPT_DIR/t3code"
 
 # Add ~/.local/bin to PATH
