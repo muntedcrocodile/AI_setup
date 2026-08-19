@@ -4,6 +4,9 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VENV_DIR="$SCRIPT_DIR/.venv"
 REQUIREMENTS_FILE="$SCRIPT_DIR/requirements.txt"
+T3CODE_REPO_URL="https://github.com/muntedcrocodile/t3code.git"
+T3CODE_REPO_REF="ai-setup-live"
+T3CODE_DIR="$SCRIPT_DIR/t3code"
 
 # Add ~/.local/bin to PATH
 if ! grep -q 'HOME.*\.local/bin' "$HOME/.bashrc" 2>/dev/null; then
@@ -78,7 +81,31 @@ fi
 
 # Re-export PATH after shell refresh
 if [ -f "$HOME/.bun/bin/bun" ]; then
-    export PATH="$HOME/.bun/bin:$PATH"
+    export PATH="$HOME/.vite-plus/bin:$HOME/.vite-plus/current/bin:$HOME/.bun/bin:$PATH"
+fi
+
+# ============ Install Vite+ (required to build T3 Code) ============
+# T3 Code is a Vite+ workspace. Its lockfile uses pnpm catalogs, so Bun is
+# used to run the build but not to install the workspace dependencies. The
+# service uses Vite+'s managed Node runtime because T3 requires Node for its
+# HTTP server and browser session cookies.
+if [ -f "$HOME/.vite-plus/env" ]; then
+    source "$HOME/.vite-plus/env"
+fi
+export PATH="$HOME/.vite-plus/bin:$HOME/.vite-plus/current/bin:$HOME/.bun/bin:$PATH"
+
+if ! command -v vp &> /dev/null; then
+    echo "Installing Vite+..."
+    curl -fsSL https://vite.plus | VP_NODE_MANAGER=yes bash
+    if [ -f "$HOME/.vite-plus/env" ]; then
+        source "$HOME/.vite-plus/env"
+    fi
+    export PATH="$HOME/.vite-plus/bin:$HOME/.vite-plus/current/bin:$HOME/.bun/bin:$PATH"
+fi
+
+if ! command -v vp &> /dev/null; then
+    echo "Vite+ installation failed: vp is not available" >&2
+    exit 1
 fi
 
 # ============ Install OpenCode (user level via npm/bun) ============
@@ -92,6 +119,37 @@ fi
 # Ensure opencode is in PATH
 if [ -f "$HOME/.local/bin/opencode" ]; then
     export PATH="$HOME/.local/bin:$PATH"
+fi
+
+# ============ Fetch and build T3 Code ============
+# Keep T3 Code as an independent checkout so its source can be changed and
+# committed from this directory without mixing those changes into AI_setup.
+if [ -f "$T3CODE_DIR/package.json" ]; then
+    echo "T3 Code source already available at $T3CODE_DIR"
+elif [ -f "$SCRIPT_DIR/.gitmodules" ] && [ -e "$SCRIPT_DIR/.git" ]; then
+    echo "Initializing T3 Code submodule..."
+    git -C "$SCRIPT_DIR" submodule update --init --recursive -- t3code
+else
+    echo "Cloning T3 Code to $T3CODE_DIR..."
+    git clone --branch "$T3CODE_REPO_REF" --recurse-submodules "$T3CODE_REPO_URL" "$T3CODE_DIR"
+fi
+
+if [ ! -f "$T3CODE_DIR/package.json" ]; then
+    echo "T3 Code source is missing package.json" >&2
+    exit 1
+fi
+
+echo "Installing T3 Code dependencies..."
+(
+    cd "$T3CODE_DIR"
+    vp i
+    echo "Building T3 Code..."
+    bun run build
+)
+
+if [ ! -f "$T3CODE_DIR/apps/server/dist/bin.mjs" ]; then
+    echo "T3 Code build did not produce apps/server/dist/bin.mjs" >&2
+    exit 1
 fi
 
 # ============ Copy OpenCode Config ============
@@ -131,6 +189,19 @@ if [ -f "$SCRIPT_DIR/docker-compose-applications.service" ]; then
     fi
 fi
 
+if [ -f "$SCRIPT_DIR/t3code.service" ]; then
+    # Run the source checkout directly so rebuilding after local edits only
+    # requires rerunning this installer.
+    sed "s|^WorkingDirectory=.*|WorkingDirectory=$T3CODE_DIR|" "$SCRIPT_DIR/t3code.service" > "/tmp/t3code.service"
+
+    if [ ! -f "$SYSTEMD_USER_DIR/t3code.service" ] || ! diff -q "/tmp/t3code.service" "$SYSTEMD_USER_DIR/t3code.service" > /dev/null 2>&1; then
+        echo "Copying T3 Code systemd service..."
+        cp "/tmp/t3code.service" "$SYSTEMD_USER_DIR/"
+    else
+        echo "T3 Code systemd service already up to date"
+    fi
+fi
+
 # Enable and start the systemd user service (idempotent)
 systemctl --user daemon-reload 2>/dev/null || true
 systemctl --user enable docker-compose-applications.service 2>/dev/null || true
@@ -141,6 +212,11 @@ if [ "$DOCKER_GROUP_ADDED" = true ]; then
 else
     docker compose up -d 2>/dev/null || true
 fi
+
+# Start/restart T3 Code after its source has been built. It intentionally runs
+# outside Docker so it can access the host's provider CLIs and user credentials.
+systemctl --user enable t3code.service 2>/dev/null || true
+systemctl --user restart t3code.service 2>/dev/null || systemctl --user start t3code.service 2>/dev/null || true
 
 # ============ Virtual Environment Setup ============
 if [ ! -d "$VENV_DIR" ]; then
