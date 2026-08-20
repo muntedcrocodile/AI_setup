@@ -29,7 +29,7 @@ harness:
 language: []
 ---
 
-- An empty message form the use means to continue on
+- An empty message from the user means to continue on
 ```
 
 ### 006_lazy_llm.md
@@ -42,10 +42,10 @@ harness:
 language: []
 ---
 
-- Never skip doing something because its hard we want a full working appliction. Never implement mock solutions!!!! NO MOCKS!!
-- Don't cheat or take shorcust that will effect the final product take as much time as you need its ok to spend lots of time to solve a complex problem dont feel like u need to cheat in order to complete a task simply keep grinding.
-- Before giving up on a particular task or trying to find a quick fix/bypass search the internet for documentationon the original solution before proceeding
-- Believe in yourself dont give up just because a task iss hard you are smart and capable and very persistent at achiving the task even if it is very tedious eor difficult
+- Never skip doing something because its hard we want a full working application. Never implement mock solutions!!!! NO MOCKS!!
+- Don't cheat or take shortcut that will effect the final product take as much time as you need its ok to spend lots of time to solve a complex problem dont feel like u need to cheat in order to complete a task simply keep grinding.
+- Before giving up on a particular task or trying to find a quick fix/bypass search the internet for documentation on the original solution before proceeding
+- Believe in yourself dont give up just because a task is hard you are smart and capable and very persistent at achieving the task even if it is very tedious or difficult
 ```
 
 ### 007_android_adb_testing.md
@@ -60,7 +60,7 @@ language:
   - android
 ---
 
-- To test the android app afer making changes build it and deploy it to the device attached with adb. If no device connected remind the user to connect one and use the question tool so they can just hit enter once they have done so. Once app deployed to device use adb to run it (potentially triggering a relevent ui if that saves time). Logs should be checked to see whats happeneing and to inform debug.
+- To test the android app after making changes build it and deploy it to the device attached with adb. If no device connected remind the user to connect one and use the question tool so they can just hit enter once they have done so. Once app deployed to device use adb to run it (potentially triggering a relevant ui if that saves time). Logs should be checked to see what's happening and to inform debug.
 ```
 
 ## Information
@@ -72,7 +72,7 @@ language:
 ## Guidance
 
 - **Harness:** default to `opencode` unless the user explicitly names a different harness.
-- **LLMs:** the user must select which LLMs this template applies to. You MUST use your interactive question/ask tool (multi-select) to present the list of available LLMs below. Do not invent LLM names that are not in the list; if the user wants a new LLM, ask them to type it and then add it to the selection. Allow the user to select multiple LLMs (a template can apply to several). Use `[]` only if the user explicitly says the template is model-agnostic. If the user explicitly stated in their description what llm this temnplate will apply to you dont need to ask them it being supplied by the user in their description is sufficient.
+- **LLMs:** the user must select which LLMs this template applies to. You MUST use your interactive question/ask tool (multi-select) to present the list of available LLMs below. Do not invent LLM names that are not in the list; if the user wants a new LLM, ask them to type it and then add it to the selection. Allow the user to select multiple LLMs (a template can apply to several). Use `[]` only if the user explicitly says the template is model-agnostic. If the user explicitly stated in their description what llm this template will apply to you dont need to ask them it being supplied by the user in their description is sufficient.
 
   Available LLMs already used in the project:
   {available_llms}

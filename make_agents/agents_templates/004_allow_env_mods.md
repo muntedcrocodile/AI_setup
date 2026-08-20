@@ -7,4 +7,4 @@ harness:
 language: []
 ---
 
-- You can change the enviroment if thats needed or install packages with apt (apt requires sudo).
+- You can change the environment if that's needed or install packages with apt (apt requires sudo).

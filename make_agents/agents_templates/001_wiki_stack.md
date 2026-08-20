@@ -10,13 +10,13 @@ language: ["notes"]
 # LLM Wiki — Master Schema
 
 ## Project Structure
-- `injest/` — immutable source documents. NEVER modify any file in injest/. At the start of the session heck this directory injest everything in this directory make sure to move it to raw once injested.
+- `ingest/` — immutable source documents. NEVER modify any file in ingest/. At the start of the session check this directory ingest everything in this directory make sure to move it to raw once ingested.
 - `raw/` — immutable source documents. NEVER modify any file in raw/.
 - `wiki/` — LLM-generated wiki. You own this layer entirely.
 - `tools/` — directory to store custom commandline tools written in python
 - `tools/index.md` — index of all tools that you have written in tools/ directory.
 - `tools/log.md` — append-only activity log for tools. Never delete entries.
-- `working/` — A working directory for temporary actions ie development of tools, one off autmation code, etc
+- `working/` — A working directory for temporary actions ie development of tools, one off automation code, etc
 - `wiki/index.md` — master catalog. Update on EVERY ingest.
 - `wiki/log.md` — append-only activity log for wiki. Never delete entries.
 - `wiki/overview.md` — high-level synthesis. Revise after major ingests.
@@ -68,8 +68,8 @@ open_questions: []
 ---
 
 ## Ingest Workflow
-When I say "ingest [filename]" or when injesting files found in injest/:
-0. If doing a mass injest from injest/ move each file to raw/ then complete the full injest flow for each file individually. Injest all files in injest/ sequentially without stopping. 
+When I say "ingest [filename]" or when ingesting files found in ingest/:
+0. If doing a mass ingest from ingest/ move each file to raw/ then complete the full ingest flow for each file individually. Ingest all files in ingest/ sequentially without stopping.
 1. Read the source file from raw/.
 2. Write up key takeaways with me (3–5 bullet points).
 3. Create wiki/sources/summary-{slug}.md with full summary.
@@ -79,7 +79,7 @@ When I say "ingest [filename]" or when injesting files found in injest/:
 7. Create new concept/entity pages if the source introduces them.
 8. Append a structured entry to wiki/log.md.
 9. A single ingest should touch 5–15 wiki pages.
-10. Once injested make a git commit for the injest of this file so its tracked.
+10. Once ingested make a git commit for the ingest of this file so its tracked.
 
 ## Query Workflow
 When I ask a question:
@@ -100,16 +100,16 @@ When I say "lint" or "health check":
 8. Make a git commit for this update.
 
 ## Tools
-When asked to create a tool or an automatiable task is being done many times write a tool.
-1. In the working/ directory develop a tool in python that automaties this action/task
+When asked to create a tool or an automatable task is being done many times write a tool.
+1. In the working/ directory develop a tool in python that automates this action/task
 2. Test/iterate on the tool until it is in a good working condition that will be useful in future.
-3. Move the tool to the tools/ direcotry (either as a single file or if in multiple fiels with required data/references move all the files to a directory with name of the tool and a `__main__.py` file so it can be invokes as a package)
+3. Move the tool to the tools/ directory (either as a single file or if in multiple files with required data/references move all the files to a directory with name of the tool and a `__main__.py` file so it can be invoked as a package)
 4. Update the `tools/index.md` file with the new tool and a brief description of what it does.
-5. Always write a doctring at the top of the tool fuile explaining its usage and any caviats that should be known about.
-6. Make a git commit for the tool additon.
+5. Always write a docstring at the top of the tool file explaining its usage and any caveats that should be known about.
+6. Make a git commit for the tool addition.
 General notes about tools
-1. If an exisitng tool exists that is simmillar to what is needed its preferable to edit it/expand it to work for the new case.
-2. Every time you use one of these cusotm tools add this usage to the `tools/log.md` with a quick note about what it was used for and how effective it was.
+1. If an existing tool exists that is similar to what is needed its preferable to edit it/expand it to work for the new case.
+2. Every time you use one of these custom tools add this usage to the `tools/log.md` with a quick note about what it was used for and how effective it was.
 
 ## Safety Rules
 - NEVER write to raw/. This is a hard constraint with no exceptions.

@@ -5,4 +5,4 @@ harness:
 language: []
 ---
 
-- An empty message form the use means to continue on
+- An empty message from the user means to continue on

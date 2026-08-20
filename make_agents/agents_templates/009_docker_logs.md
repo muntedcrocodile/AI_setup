@@ -7,4 +7,4 @@ language:
   - docker
 ---
 
-- to see build and error logs for the frotend use: docker compose logs frontend
+- to see build and error logs for the frontend use: docker compose logs frontend
