@@ -8,8 +8,8 @@ A template is placed at the deepest level for which it declares metadata:
     harness / llm / language           (when all three are present)
 
 Templates with multiple harnesses / llms / languages are placed in every
-combination (their selection state however is unique and shared across
-all occurrences).
+combination allowed by the harness's configured model access. Their selection
+state is unique and shared across all occurrences.
 """
 from __future__ import annotations
 
@@ -254,9 +254,14 @@ class Tree:
 
     ROOT_LEVEL = "root"
 
-    def __init__(self, templates: dict[str, dict[str, Any]]):
+    def __init__(
+        self,
+        templates: dict[str, dict[str, Any]],
+        harness_models: dict[str, list[str]] | None = None,
+    ) -> None:
         self.root = Node(name="(root)", path="", level=self.ROOT_LEVEL)
         self.templates = templates
+        self.harness_models = harness_models
         self._build()
 
     def _build(self) -> None:
@@ -266,6 +271,12 @@ class Tree:
             llms = meta["llm"] or [None]
             languages = meta["language"] or [None]
             for h, l, lang in product(harnesses, llms, languages):
+                if (
+                    l is not None
+                    and self.harness_models is not None
+                    and l not in self.harness_models.get(h, [])
+                ):
+                    continue
                 parts: list[tuple[str, str]] = [("harness", h)]
                 if l is not None:
                     parts.append(("llm", l))

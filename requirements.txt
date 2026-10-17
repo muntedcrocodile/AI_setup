@@ -1,3 +1,4 @@
 click
 blessed
 pyyaml
+ruamel.yaml

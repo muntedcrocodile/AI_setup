@@ -92,7 +92,53 @@ make_agent_file
 
 Templates are stored in `make_agents/agents_templates/` with numbered prefixes for ordering. Use the interactive UI to toggle which templates to include. Supports per harness and per llm template management.
 
-Edit `make_agents/template_config.json` to change the default template selections.
+Press **Ctrl+E** on a highlighted template to open its file in the configured
+editor. Set `editor` in `make_agents/config.yml` to an editor command
+(default: `codium`). Arguments are supported, for example `codium --wait` or
+`code --reuse-window`; quote executable paths containing
+spaces within the command string. The picker reloads when the editor command
+returns. If the editor stays open separately, press **Ctrl+R** after saving to
+refresh the preview and generated content.
+
+The picker uses two YAML files:
+
+- `make_agents/config.yml`: program settings, such as `editor: codium`.
+- `make_agents/metadata.yml`: model providers, model access for each harness,
+  template selections, and expanded tree paths.
+
+Edit the `harnesses` section of `metadata.yml` to control which models appear
+under each harness. For example:
+
+```yaml
+providers:
+  default provider:
+    - gpt-6-astra
+    - minimax m2.5
+    - minimax m3
+harnesses:
+  codex:
+    models: [gpt-6-astra]
+  opencode:
+    models: [minimax m2.5, minimax m3]
+```
+
+On startup and refresh, names are discovered from snippet front matter (`llm`
+and `harness`). Unregistered models are added under `default provider`; you can
+move them into your own provider groups. Newly discovered harnesses start with
+the models named in their snippets. After that, each harness's `models` list is
+manual: new models require an explicit entry to appear under an existing
+harness, and removed entries stay removed. `models: []` hides model-specific
+snippets for that harness; snippets with `llm: []` remain available.
+
+The preview displays the snippet's declared harnesses and models above its full
+text. Use **Page Up/Page Down** for long previews. **Ctrl+R** reloads both YAML
+files and snippet files. Automatic updates preserve YAML comments, provider
+assignments, and manual access lists. Selections and expanded paths are saved
+in `metadata.yml`. Snippets excluded from every harness are not included in
+generated output.
+
+Existing `template_config.json` settings are imported when the corresponding
+YAML file does not yet exist. Existing YAML settings take precedence.
 
 ### Use the agent
 
