@@ -1,0 +1,66 @@
+# Editable metadata. New models go under 'default provider'.
+# Existing harness model lists are manual; new harnesses are seeded from snippets.
+# Templates and ui_state are maintained by the picker.
+providers:
+  default provider:
+    - gpt-6-astra
+    - minimax m2.5
+    - minimax m3
+harnesses:
+  codex:
+    models:
+      - gpt-6-astra
+  opencode:
+    models:
+      - minimax m2.5
+      - minimax m3
+templates:
+  000_opencode: false
+  001_wiki_stack: false
+  002_chinese_llm: false
+  002_minimal_words: false
+  003_chrome_devtools: false
+  004_allow_env_mods: false
+  005_operation_steering: false
+  006_lazy_llm: false
+  008_bun: true
+  009_docker_logs: false
+  010_gradle: false
+  011_nextjs_convex_setup: false
+  012_python_venv: false
+  013_typescript: true
+  014_cpp_c_build: false
+  015_consultant: false
+  016_comments: false
+  017_python_preferences: false
+  018_incremental_git_commits: false
+  020_tailwind_shadcn: true
+  021_android_adb_testing: false
+  021_coder_subagent: false
+ui_state:
+  expanded_paths:
+    - codex
+    - codex/gpt-6-astra
+    - codex/gpt-6-astra/css
+    - codex/gpt-6-astra/javascript
+    - codex/gpt-6-astra/react
+    - codex/gpt-6-astra/typescript
+    - opencode/minimax m2.5
+    - opencode/minimax m2.5/android
+    - opencode/minimax m2.5/bun
+    - opencode/minimax m2.5/c
+    - opencode/minimax m2.5/cpp
+    - opencode/minimax m2.5/css
+    - opencode/minimax m2.5/docker
+    - opencode/minimax m2.5/java
+    - opencode/minimax m2.5/javascript
+    - opencode/minimax m2.5/notes
+    - opencode/minimax m2.5/python
+    - opencode/minimax m2.5/react
+    - opencode/minimax m2.5/typescript
+    - opencode/minimax m3
+    - opencode/minimax m3/bun
+    - opencode/minimax m3/cpp
+    - opencode/minimax m3/java
+    - opencode/minimax m3/notes
+    - opencode/minimax m3/python
