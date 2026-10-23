@@ -4,6 +4,11 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 VENV_DIR="$SCRIPT_DIR/.venv"
 REQUIREMENTS_FILE="$SCRIPT_DIR/requirements.txt"
+
+# Shared optional skills are maintained in their own public submodule.
+if [ ! -f "$SCRIPT_DIR/.opencode/skills/tailscale-share/SKILL.md" ]; then
+    git -C "$SCRIPT_DIR" submodule update --init -- .opencode/skills
+fi
 T3CODE_REPO_URL="https://github.com/muntedcrocodile/t3code.git"
 T3CODE_REPO_REF="main"
 T3CODE_DIR="$SCRIPT_DIR/t3code"

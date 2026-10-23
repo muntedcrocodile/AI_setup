@@ -12,6 +12,11 @@ else
     echo "Repository already exists at $TARGET_DIR"
 fi
 
+# Initialize only missing shared skills; preserve other checked-out submodules.
+if [ ! -f "$TARGET_DIR/.opencode/skills/tailscale-share/SKILL.md" ]; then
+    git -C "$TARGET_DIR" submodule update --init -- .opencode/skills
+fi
+
 # Make install.sh executable
 chmod +x "$TARGET_DIR/install.sh"
 

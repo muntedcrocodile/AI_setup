@@ -2,3 +2,6 @@
 	path = t3code
 	url = https://github.com/muntedcrocodile/t3code.git
 	branch = main
+[submodule "shared-skills"]
+	path = .opencode/skills
+	url = https://github.com/muntedcrocodile/agent-skills.git

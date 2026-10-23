@@ -1,5 +1,26 @@
 # AI Agentic Setup
 
+## Shared optional skills
+
+Reusable authored skills are maintained in the public
+[agent-skills](https://github.com/muntedcrocodile/agent-skills) repository under
+AGPL-3.0-only. This repository pins that library as the `.opencode/skills`
+submodule; it no longer owns separate copies of the skill sources.
+
+```bash
+git submodule update --init -- .opencode/skills
+```
+
+Skills are optional: agents may discover their names/descriptions and read the
+full instructions only when useful. Do not paste skill bodies into generated
+AGENTS.md files. Existing global skills links can continue to point at this
+submodule. Bundled system/plugin skills retain their own installation and
+licenses; any local `.system` directory is ignored by the shared repository.
+
+Keep personal workspace paths and tailnet preferences in local configuration
+(see the skills README), never in public skill files. To change a skill, commit
+and push inside the submodule, then update this repository's submodule pointer.
+
 > **An AGENTS.md manager** — a personal AI agentic setup using opencode with SearXNG.
 
 ## What is this?
